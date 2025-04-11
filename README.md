@@ -2,6 +2,8 @@
 
 A lightweight, client-side tool to check for duplicate GTINs in Tesco fulfilment payloads.
 
+URL: https://gtin-checker.vercel.app/
+
 ## 🔍 Features
 - Paste your JSON
 - Click "Check for Duplicates"
