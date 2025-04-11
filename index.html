@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>GTIN Duplicate Checker</title>
+  <style>
+    body { font-family: sans-serif; margin: 40px; max-width: 800px; }
+    textarea { width: 100%; height: 300px; }
+    button { margin-top: 10px; padding: 10px 20px; font-size: 16px; }
+    pre { background: #f4f4f4; padding: 10px; border-radius: 5px; }
+  </style>
+</head>
+<body>
+<h1>GTIN Duplicate Checker</h1>
+<p>Paste your JSON payload below:</p>
+<textarea id="jsonInput" placeholder="Paste JSON here..."></textarea><br>
+<button onclick="checkDuplicates()">Check for Duplicates</button>
+
+<h3>Results:</h3>
+<pre id="output">Nothing checked yet.</pre>
+
+<script>
+  function checkDuplicates() {
+      const input = document.getElementById('jsonInput').value;
+      let output = document.getElementById('output');
+      try {
+          const data = JSON.parse(input);
+          const gtinCount = {};
+          const duplicates = {};
+
+          const groups = data.fulfilmentGroups || [];
+
+          groups.forEach(group => {
+              (group.fulfilmentOrders || []).forEach(order => {
+                  (order.items || []).forEach(item => {
+                      const gtin = item.gtin;
+                      if (gtin) {
+                          gtinCount[gtin] = (gtinCount[gtin] || 0) + 1;
+                      }
+                  });
+              });
+          });
+
+          Object.keys(gtinCount).forEach(gtin => {
+              if (gtinCount[gtin] > 1) {
+                  duplicates[gtin] = gtinCount[gtin];
+              }
+          });
+
+          output.textContent = Object.keys(duplicates).length > 0
+              ? JSON.stringify(duplicates, null, 2)
+              : "✅ No duplicate GTINs found.";
+      } catch (e) {
+          output.textContent = "❌ Invalid JSON!";
+      }
+  }
+</script>
+</body>
+</html>
